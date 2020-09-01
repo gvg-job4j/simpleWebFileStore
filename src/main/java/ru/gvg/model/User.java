@@ -4,13 +4,14 @@ package ru.gvg.model;
  * @author Valeriy Gyrievskikh
  * @since 12.08.2020
  */
+
 public class User {
     /**
      * User name;
      */
     private String name;
     /**
-     * User passworc.
+     * User password.
      */
     private String password;
     /**
@@ -21,10 +22,10 @@ public class User {
     public User() {
     }
 
-    public User(String name, String password, String email) {
+    public User(String name, String email, String password) {
         this.name = name;
-        this.password = password;
         this.email = email;
+        this.password = password;
     }
 
     public String getName() {
@@ -37,5 +38,17 @@ public class User {
 
     public String getEmail() {
         return email;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 }

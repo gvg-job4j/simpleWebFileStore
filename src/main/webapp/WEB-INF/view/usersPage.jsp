@@ -12,6 +12,13 @@
     <title>$Title$</title>
 </head>
 <body>
-<h1>${message}</h1>
+<form>
+    <table>
+        <tr><th> Name</th><th>email</th> </tr>
+        <c:forEach var="user" items="${users}">
+            <tr><td><c:out value="${user.name}"/> </td><td><c:out value="${user.email}"/></td> </tr>
+        </c:forEach>
+    </table>
+</form>
 </body>
 </html>
