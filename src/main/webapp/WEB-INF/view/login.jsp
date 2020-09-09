@@ -14,10 +14,15 @@
 <body>
 <div>
     <form action="login" method="post">
-        <input type="email" name="email" placeholder="Email"/>
-        <input type="password" name="password" placeholder="Password"/>
-        <input type="submit"/>
+        <p>
+            <b>Email</b><input type="email" name="email" placeholder="Email" required align="middle"/><br>
+            <b>Password</b><input type="password" name="password" placeholder="Password" required align="middle"/>
+        </p>
+        <p>
+            <input type="submit" value="Sign in" formtarget="_self"/> ${message}
+        </p>
     </form>
+    <a href="index.jsp" >Return to start page</a>
 </div>
 </body>
 </html>

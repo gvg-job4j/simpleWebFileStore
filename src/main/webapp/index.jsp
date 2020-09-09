@@ -9,9 +9,13 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
-    <title>$Title$</title>
+    <title>Welcome page</title>
 </head>
 <body>
-<h1>${message}</h1>
+<div>
+    <p>
+        Please <a href="/login"> Login</a> or <a href="/signup">Register</a>
+    </p>
+</div>
 </body>
 </html>

@@ -14,11 +14,16 @@
 <body>
 <div>
     <form action="signup" method="post">
-        <input type="text" name="name" placeholder="Name"/>
-        <input type="email" name="email" placeholder="Email"/>
-        <input type="password" name="password" placeholder="Password"/>
-        <input type="submit"/>
+        <p>
+            <b>User name</b><input type="text" name="name" placeholder="Name" required/><br>
+            <b>Email</b><input type="email" name="email" placeholder="Email" required/><br>
+            <b>Password</b><input type="password" name="password" placeholder="Password" required/><br>
+        </p>
+        <p>
+            <input type="submit" value="Sign up" formtarget="_self"/> ${message}
+        </p>
     </form>
+    <a href="index.jsp" >Return to start page</a>
 </div>
 </body>
 </html>

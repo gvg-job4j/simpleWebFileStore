@@ -24,20 +24,20 @@ public class StartController {
         this.userDAO = userDAO;
     }
 
-    @GetMapping("/")
-    public String openIndex(Model model) {
-        return "login";
-    }
-
     @GetMapping("/login")
-    public String openLogin(Model model) {
+    public String openLogin() {
         return "login";
     }
 
     @GetMapping("/signup")
-    public String openSignup(Model model) {
+    public String openSignup() {
         return "signup";
     }
+
+//    @GetMapping("/index")
+//    public String openIndex(){
+//        return "index";
+//    }
 
     @GetMapping("/users")
     public String setUsers(Model model) {
@@ -47,27 +47,39 @@ public class StartController {
 
     @PostMapping("/login")
     public String signIn(@RequestParam("email") String email,
-                         @RequestParam("password") String password) {
+                         @RequestParam("password") String password,
+                         Model model) {
+        String pageName = "login";
         User user = userDAO.getUser(email);
         if (user != null && user.getPassword().equals(password)) {
-            return "redirect:/users";
+            pageName = "redirect:/users";
         } else {
-            return "redirect:/";
+            if (user == null) {
+                model.addAttribute("message", "User not found!");
+            } else {
+                model.addAttribute("message", "Wrong password!");
+            }
         }
+        return pageName;
     }
 
     @PostMapping("/signup")
     public String signUp(@RequestParam("name") String name,
                          @RequestParam("email") String email,
-                         @RequestParam("password") String password) {
+                         @RequestParam("password") String password,
+                         Model model) {
+        String pageName = "signup";
         User user = userDAO.getUser(email);
         if (user == null) {
             user = new User(name, email, password);
             if (userDAO.createUser(user)) {
-                return "redirect:/users";
+                pageName = "redirect:/users";
+            } else {
+                model.addAttribute("message", "Cant create user!");
             }
+        } else {
+            model.addAttribute("message", "User found, please login!");
         }
-        return "redirect:/";
+        return pageName;
     }
-
 }
