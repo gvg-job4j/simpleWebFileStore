@@ -17,7 +17,7 @@ import java.util.Properties;
 @Component
 public class UserDAO {
     /**
-     * Connection to database.
+     * Connection to the database.
      */
     private static Connection connection;
 
@@ -82,7 +82,6 @@ public class UserDAO {
         user.setEmail(rs.getString(3));
         user.setPassword(rs.getString(4));
         return user;
-
     }
 
     /**
@@ -91,11 +90,14 @@ public class UserDAO {
      * @param user User data.
      * @return Result of the operation.
      */
-    public boolean createUser(User user) {
+    public boolean addUser(User user) {
         boolean created = false;
         try {
-            PreparedStatement ps = connection.prepareStatement("INSERT INTO users(name, email, pass) " +
-                    "VALUES ('" + user.getName() + "', '" + user.getEmail() + "', '" + user.getPassword() + "')");
+            PreparedStatement ps = connection.prepareStatement("INSERT INTO users(name, email, pass)"
+                    + " VALUES (?, ?, ?)");
+            ps.setString(1, user.getName());
+            ps.setString(2, user.getEmail());
+            ps.setString(3, user.getPassword());
             created = ps.executeUpdate() != 0;
             ps.close();
         } catch (SQLException e) {
@@ -113,7 +115,8 @@ public class UserDAO {
     public User getUser(String email) {
         User user = null;
         try {
-            PreparedStatement ps = connection.prepareStatement("SELECT * FROM users WHERE email = '" + email + "'");
+            PreparedStatement ps = connection.prepareStatement("SELECT * FROM users WHERE email = ?");
+            ps.setString(1, email);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
                 user = createUser(rs);
@@ -134,9 +137,14 @@ public class UserDAO {
     public boolean updateUser(User user) {
         boolean updated = false;
         try {
-            PreparedStatement ps = connection.prepareStatement("UPDATE users SET name = '" + user.getName()
-                    + "'" + ", password = '" + user.getPassword()
-                    + "'" + "where email = '" + user.getEmail() + "'");
+            PreparedStatement ps = connection.prepareStatement("UPDATE users "
+                    + "SET name = ?, pass = ? WHERE email = ?");
+//                    + "SET name = '" + user.getName()
+//                    + "'" + ", password = '" + user.getPassword()
+//                    + "'" + "where email = '" + user.getEmail() + "'");
+            ps.setString(1, user.getName());
+            ps.setString(2, user.getPassword());
+            ps.setString(3, user.getEmail());
             updated = ps.executeUpdate() != 0;
             ps.close();
         } catch (SQLException e) {
@@ -154,7 +162,8 @@ public class UserDAO {
     public boolean deleteUser(User user) {
         boolean deleted = true;
         try {
-            PreparedStatement ps = connection.prepareStatement("DELETE FROM users where email = '" + user.getEmail() + "'");
+            PreparedStatement ps = connection.prepareStatement("DELETE FROM users WHERE email = ?");
+            ps.setString(1, user.getEmail());
             deleted = ps.executeUpdate() != 0;
         } catch (SQLException e) {
             e.printStackTrace();

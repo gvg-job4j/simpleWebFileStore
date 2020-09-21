@@ -15,8 +15,8 @@
 <div>
     <form action="login" method="post">
         <p>
-            <b>Email</b><input type="email" name="email" placeholder="Email" required align="middle"/><br>
-            <b>Password</b><input type="password" name="password" placeholder="Password" required align="middle"/>
+            <input type="email" name="email" placeholder="Email" required align="middle"/><br>
+            <input type="password" name="password" placeholder="Password" required align="middle"/>
         </p>
         <p>
             <input type="submit" value="Sign in" formtarget="_self"/> ${message}
