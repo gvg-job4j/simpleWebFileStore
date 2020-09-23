@@ -95,7 +95,6 @@
         </dependency>
 
 
-
         <!--<dependency>-->
         <!--<groupId>org.hibernate.validator</groupId>-->
         <!--<artifactId>hibernate-validator</artifactId>-->
@@ -160,4 +159,19 @@
             </plugins>
         </pluginManagement>
     </build>
+
+    <profiles>
+        <profile>
+            <id>travis</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <db.url>jdbc:postgresql://localhost/netfilestore</db.url>
+                <db.username>postgres</db.username>
+                <db.password></db.password>
+                <db.driver>org.postgresql.Driver</db.driver>
+            </properties>
+        </profile>
+    </profiles>
 </project>

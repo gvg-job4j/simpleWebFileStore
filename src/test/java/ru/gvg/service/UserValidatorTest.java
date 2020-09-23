@@ -31,17 +31,16 @@ public class UserValidatorTest {
     private UserDAO userDAO;
 
     private static final String userEmail = "mail1@mail.ru";
-    private static final String newEmail = "new@new.ru";
     private static final User user = mock(User.class);
 
     @BeforeClass
-    public static void setup(){
+    public static void setup() {
         when(user.getEmail()).thenReturn(userEmail);
     }
 
     @Test
     public void validateShouldAcceptUserWithNewEmail() throws Exception {
-        when(userDAO.getUser(newEmail)).thenReturn(null);
+        when(userDAO.getUser(userEmail)).thenReturn(null);
         Errors errors = mock(Errors.class);
         userValidator.validate(user, errors);
         verify(errors, never()).rejectValue(eq("email"), any(), any());
