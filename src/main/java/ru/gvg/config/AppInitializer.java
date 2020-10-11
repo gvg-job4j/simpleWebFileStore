@@ -1,0 +1,24 @@
+package ru.gvg.config;
+
+import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
+
+/**
+ * @author Valeriy Gyrievskikh
+ * @since 08.10.2020
+ */
+public class AppInitializer extends AbstractAnnotationConfigDispatcherServletInitializer {
+    @Override
+    protected Class<?>[] getRootConfigClasses() {
+        return new Class[]{AppConfig.class};
+    }
+
+    @Override
+    protected Class<?>[] getServletConfigClasses() {
+        return new Class[]{MvcConfig.class};
+    }
+
+    @Override
+    protected String[] getServletMappings() {
+        return new String[]{"/"};
+    }
+}

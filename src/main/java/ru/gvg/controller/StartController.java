@@ -1,19 +1,17 @@
 package ru.gvg.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import ru.gvg.dao.UserDAO;
+import org.springframework.web.bind.annotation.*;
 import ru.gvg.model.User;
+import ru.gvg.service.UserService;
 import ru.gvg.service.UserValidator;
+
+import java.util.List;
 
 
 /**
@@ -23,10 +21,10 @@ import ru.gvg.service.UserValidator;
 @Controller
 public class StartController {
 
-    private UserDAO userDAO;
+    private UserService userService;
 
     private UserValidator userValidator;
-    private ObjectError error;
+//    private ObjectError error;
 
     @Autowired
     public void setUserValidator(UserValidator userValidator) {
@@ -34,8 +32,8 @@ public class StartController {
     }
 
     @Autowired
-    public void setUserDAO(UserDAO userDAO) {
-        this.userDAO = userDAO;
+    public void setUserService(UserService userService) {
+        this.userService = userService;
     }
 
     @GetMapping("/login")
@@ -44,13 +42,15 @@ public class StartController {
     }
 
     @GetMapping("/signup")
-    public String openSignup() {
+    public String openSignup(Model model) {
+        model.addAttribute("user", new User());
         return "signup";
     }
 
     @GetMapping("/users")
     public String setUsers(Model model) {
-        model.addAttribute("users", userDAO.getUsers());
+        List<User> users = userService.allUsers();
+        model.addAttribute("users", users);
         return "usersPage";
     }
 
@@ -59,7 +59,7 @@ public class StartController {
                          @RequestParam("password") String password,
                          Model model) {
         String pageName = "login";
-        User user = userDAO.getUser(email);
+        User user = userService.findUserByEmail(email);
         if (user != null && user.getPassword().equals(password)) {
             pageName = "redirect:/users";
         } else {
@@ -73,34 +73,38 @@ public class StartController {
     }
 
     @PostMapping("/signup")
-    public String signUp(@ModelAttribute User newUser,
+    public String signUp(@ModelAttribute("user") User newUser,
                          Model model,
                          BindingResult result) {
         String pageName = "signup";
+        if (!newUser.getPassword().equals(newUser.getPasswordConfirm())) {
+//            model.addAttribute("user", newUser);
+            model.addAttribute("passwordError", "Passwords not equals!");
+            return pageName;
+        }
         userValidator.validate(newUser, result);
         if (!result.hasErrors()) {
-            if (userDAO.addUser(newUser)) {
+            if (userService.saveUser(newUser)) {
                 pageName = "redirect:/users";
 //            } else {
 //                model.addAttribute("message", "Cant create user!");
             }
-        }else{
-            for(FieldError error : result.getFieldErrors()){
-                if(error.getField().equals("email")){
+        } else {
+            for (FieldError error : result.getFieldErrors()) {
+                if (error.getField().equals("email")) {
                     model.addAttribute("emailMessage", error.getDefaultMessage());
                 }
             }
         }
-//        User user = userDAO.getUser(newUser.getEmail());
-//        if (user == null) {
-//            if (userDAO.addUser(newUser)) {
-//                pageName = "redirect:/users";
-//            } else {
-//                model.addAttribute("message", "Cant create user!");
-//            }
-//        } else {
-//            model.addAttribute("message", "User found, please login!");
-//        }
+        return pageName;
+    }
+
+    @PostMapping("/signuptest")
+    public String signUpTest(@ModelAttribute("user") User newUser) {
+        String pageName = "signup";
+        if (userService.saveUser(newUser)) {
+            pageName = "redirect:/users";
+        }
         return pageName;
     }
 }

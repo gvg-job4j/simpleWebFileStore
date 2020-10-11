@@ -2,7 +2,7 @@ package ru.gvg.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import ru.gvg.dao.UserDAO;
+import ru.gvg.service.UserService;
 import ru.gvg.service.UserValidator;
 
 import static org.mockito.Mockito.mock;
@@ -20,7 +20,7 @@ public class TestConfig {
     }
 
     @Bean
-    public UserDAO userDAO(){
-        return mock(UserDAO.class);
+    public UserService userService(){
+        return mock(UserService.class);
     }
 }
