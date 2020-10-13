@@ -63,7 +63,6 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public void addUser(User user) {
-        boolean added = false;
         Session currentSession = sessionFactory.getCurrentSession();
         currentSession.saveOrUpdate(user);
     }

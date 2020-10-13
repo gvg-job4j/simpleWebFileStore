@@ -61,7 +61,8 @@ public class StartController {
         String pageName = "login";
         User user = userService.findUserByEmail(email);
         if (user != null && user.getPassword().equals(password)) {
-            pageName = "redirect:/users";
+            model.addAttribute("id", user.getId());
+            pageName = "redirect:/files";
         } else {
             if (user == null) {
                 model.addAttribute("message", "User not found!");
@@ -99,12 +100,4 @@ public class StartController {
         return pageName;
     }
 
-    @PostMapping("/signuptest")
-    public String signUpTest(@ModelAttribute("user") User newUser) {
-        String pageName = "signup";
-        if (userService.saveUser(newUser)) {
-            pageName = "redirect:/users";
-        }
-        return pageName;
-    }
 }

@@ -14,8 +14,7 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Size(min = 3, message = "Не меньше 3 знаков")
-
-    @Column(name="username")
+    @Column(name = "username")
     private String username;
     @Column(name = "email", unique = true)
     private String email;
@@ -23,6 +22,7 @@ public class User {
     private String password;
     @Transient
     private String passwordConfirm;
+
 
     public User() {
     }
