@@ -6,6 +6,9 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.gvg.model.UserFile;
 import ru.gvg.repository.FileRepository;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 
 /**
@@ -44,7 +47,15 @@ public class FileService {
     }
 
     @Transactional
-    public void deleteFile(Long id){
+    public void deleteFile(Long id) {
         fileRepository.deleteFile(id);
+    }
+
+    public void createDirectory(Path path) {
+        try {
+            Files.createDirectory(path);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

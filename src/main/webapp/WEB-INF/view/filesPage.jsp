@@ -15,9 +15,9 @@
 </head>
 <body>
 <div class="panel-body">
-    <form:form method="get" action="upload" enctype="multipart/form-data" modelAttribute="files">
-        <input name="id" type="hidden">${fileSaveError}
+    <form:form method="get" action="upload" enctype="multipart/form-data" modelAttribute="user">
         <div class="form-group">
+            <form:input path="id" name="id" value="${user.id}" type="hidden"/>
             <div class="col-md-offset-3 col-md-9">
                 <form:button>Upload</form:button>
             </div>
@@ -36,6 +36,7 @@
                 <td><c:out value="${userFile.size}"/></td>
                 <td>
                     <form method="post" action="deleteFile">
+                        <input type="hidden" name="userId" value="${userFile.user.id}">
                         <input type="hidden" name="fileId" value="${userFile.id}">
                         <input type="submit" value="Delete">
                     </form>

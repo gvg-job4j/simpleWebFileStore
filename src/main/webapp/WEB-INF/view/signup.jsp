@@ -26,7 +26,7 @@
                     <div class="form-group">
                             <%--<label for="username" class="col-md-3 control-label">User name</label>--%>
                         <div class="col-md-9">
-                            <form:input type="text" path="username" placeholder="Name"
+                            <form:input type="text" minlength="3" path="username" placeholder="Name"
                                         value="${user.username}" cssClass="form-control"/>
                         </div>
                     </div>

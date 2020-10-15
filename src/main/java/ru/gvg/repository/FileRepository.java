@@ -2,6 +2,8 @@ package ru.gvg.repository;
 
 import ru.gvg.model.UserFile;
 
+import java.io.IOException;
+import java.nio.file.Path;
 import java.util.List;
 
 /**

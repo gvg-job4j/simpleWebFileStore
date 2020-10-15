@@ -1,6 +1,7 @@
 package ru.gvg.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -8,9 +9,14 @@ import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
 import ru.gvg.model.User;
+import ru.gvg.service.FileService;
 import ru.gvg.service.UserService;
 import ru.gvg.service.UserValidator;
 
+import javax.servlet.http.HttpServletRequest;
+import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 
@@ -21,7 +27,12 @@ import java.util.List;
 @Controller
 public class StartController {
 
+    @Value("${file.directory}")
+    private String fileDirectory;
+
     private UserService userService;
+
+    private FileService fileService;
 
     private UserValidator userValidator;
 //    private ObjectError error;
@@ -34,6 +45,11 @@ public class StartController {
     @Autowired
     public void setUserService(UserService userService) {
         this.userService = userService;
+    }
+
+    @Autowired
+    public void setFileService(FileService fileService) {
+        this.fileService = fileService;
     }
 
     @GetMapping("/login")
@@ -76,19 +92,20 @@ public class StartController {
     @PostMapping("/signup")
     public String signUp(@ModelAttribute("user") User newUser,
                          Model model,
+                         HttpServletRequest request,
                          BindingResult result) {
         String pageName = "signup";
         if (!newUser.getPassword().equals(newUser.getPasswordConfirm())) {
-//            model.addAttribute("user", newUser);
             model.addAttribute("passwordError", "Passwords not equals!");
             return pageName;
         }
         userValidator.validate(newUser, result);
         if (!result.hasErrors()) {
             if (userService.saveUser(newUser)) {
-                pageName = "redirect:/users";
-//            } else {
-//                model.addAttribute("message", "Cant create user!");
+                String rootDirectory = request.getSession().getServletContext().getRealPath("/");
+                Path path = Paths.get(rootDirectory + fileDirectory + File.separator + newUser.getId().toString());
+                fileService.createDirectory(path);
+                pageName = "redirect:/files";
             }
         } else {
             for (FieldError error : result.getFieldErrors()) {
@@ -99,5 +116,4 @@ public class StartController {
         }
         return pageName;
     }
-
 }
