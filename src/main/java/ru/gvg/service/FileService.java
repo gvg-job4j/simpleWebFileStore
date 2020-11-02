@@ -51,6 +51,14 @@ public class FileService {
         fileRepository.deleteFile(id);
     }
 
+    @Transactional
+    public void deleteUserFiles(Long userId) {
+        List<UserFile> files = fileRepository.getByUserId(userId);
+        for (UserFile file : files) {
+            fileRepository.deleteFile(file.getId());
+        }
+    }
+
     public void createDirectory(Path path) {
         try {
             Files.createDirectory(path);

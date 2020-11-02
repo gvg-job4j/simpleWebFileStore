@@ -6,6 +6,7 @@ import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import ru.gvg.model.User;
+import ru.gvg.model.UserFile;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -40,16 +41,14 @@ public class UserRepositoryImpl implements UserRepository {
     @Override
     public User findByEmail(String email) {
         Session session = sessionFactory.getCurrentSession();
-//        User user = currentSession.get(User.class, email);
-//        return user;
         CriteriaBuilder cb = session.getCriteriaBuilder();
         CriteriaQuery<User> cq = cb.createQuery(User.class);
         Root<User> root = cq.from(User.class);
         cq.select(root).where(cb.equal(root.get("email"), email));
         Query query = session.createQuery(cq);
         User user = null;
-        if(query.getResultList().size() > 0){
-            user = (User)query.getSingleResult();
+        if (query.getResultList().size() > 0) {
+            user = (User) query.getSingleResult();
         }
         return user;
     }

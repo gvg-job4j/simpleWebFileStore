@@ -15,6 +15,7 @@ import ru.gvg.service.UserValidator;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
@@ -53,7 +54,8 @@ public class StartController {
     }
 
     @GetMapping("/login")
-    public String openLogin() {
+    public String openLogin(Model model) {
+        model.addAttribute("user", new User());
         return "login";
     }
 
@@ -73,18 +75,21 @@ public class StartController {
     @PostMapping("/login")
     public String signIn(@RequestParam("email") String email,
                          @RequestParam("password") String password,
+                         HttpServletRequest request,
                          Model model) {
         String pageName = "login";
         User user = userService.findUserByEmail(email);
         if (user != null && user.getPassword().equals(password)) {
+            String rootDirectory = request.getSession().getServletContext().getRealPath("/");
+            Path path = Paths.get(rootDirectory + fileDirectory + File.separator + user.getId().toString());
+            if (!Files.exists(path)) {
+                fileService.createDirectory(path);
+            }
             model.addAttribute("id", user.getId());
             pageName = "redirect:/files";
         } else {
-            if (user == null) {
-                model.addAttribute("message", "User not found!");
-            } else {
-                model.addAttribute("message", "Wrong password!");
-            }
+            model.addAttribute("user", new User());
+            model.addAttribute("message", user == null ? "User not found!" : "Wrong password!");
         }
         return pageName;
     }

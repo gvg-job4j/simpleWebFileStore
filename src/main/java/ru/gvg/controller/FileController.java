@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
-import ru.gvg.model.User;
 import ru.gvg.model.UserFile;
 import ru.gvg.service.FileService;
 import ru.gvg.service.UserService;
@@ -60,8 +59,6 @@ public class FileController {
         Path path = Paths.get(rootDirectory + fileDirectory + id.toString() + File.separator + fileName);
         try {
             file.transferTo(new File(path.toString()));
-//            URL newUrl = new URL("file", "localhost", 8080, path.toString());
-//            URL newUrl = request.getSession().getServletContext().getResource("/" + fileDirectory + fileName);
             URL newUrl = request.getSession().getServletContext()
                     .getResource("/" + fileDirectory + id.toString() + File.separator + fileName);
             UserFile userFile = new UserFile(fileName, path.toString(), newUrl, file.getSize());
@@ -69,7 +66,6 @@ public class FileController {
         } catch (Exception e) {
             model.addAttribute("error", e.getMessage());
             pageName = "upload";
-//            throw new RuntimeException("File saving failed", e);
         }
         return pageName;
     }
