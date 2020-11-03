@@ -80,11 +80,6 @@ public class StartController {
         String pageName = "login";
         User user = userService.findUserByEmail(email);
         if (user != null && user.getPassword().equals(password)) {
-            String rootDirectory = request.getSession().getServletContext().getRealPath("/");
-            Path path = Paths.get(rootDirectory + fileDirectory + File.separator + user.getId().toString());
-            if (!Files.exists(path)) {
-                fileService.createDirectory(path);
-            }
             model.addAttribute("id", user.getId());
             pageName = "redirect:/files";
         } else {
