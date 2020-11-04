@@ -9,10 +9,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.AnnotationConfigContextLoader;
 import org.springframework.validation.Errors;
 import ru.gvg.config.TestConfig;
-import ru.gvg.dao.UserDAO;
 import ru.gvg.model.User;
 
-import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 /**
@@ -28,7 +26,7 @@ public class UserValidatorTest {
     private UserValidator userValidator;
 
     @Autowired
-    private UserDAO userDAO;
+    private UserService userService;
 
     private static final String userEmail = "mail1@mail.ru";
     private static final User user = mock(User.class);
@@ -40,7 +38,7 @@ public class UserValidatorTest {
 
     @Test
     public void validateShouldAcceptUserWithNewEmail() throws Exception {
-        when(userDAO.getUser(userEmail)).thenReturn(null);
+        when(userService.findUserByEmail(userEmail)).thenReturn(null);
         Errors errors = mock(Errors.class);
         userValidator.validate(user, errors);
         verify(errors, never()).rejectValue(eq("email"), any(), any());
@@ -48,7 +46,7 @@ public class UserValidatorTest {
 
     @Test
     public void validateShouldNotAcceptUserWithEmail() throws Exception {
-        when(userDAO.getUser(userEmail)).thenReturn(user);
+        when(userService.findUserByEmail(userEmail)).thenReturn(user);
         Errors errors = mock(Errors.class);
         userValidator.validate(user, errors);
         verify(errors, atLeastOnce()).rejectValue(eq("email"), any(), any());

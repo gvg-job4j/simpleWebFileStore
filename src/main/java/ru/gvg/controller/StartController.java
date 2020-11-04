@@ -7,13 +7,18 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import ru.gvg.dao.UserDAO;
+import org.springframework.web.bind.annotation.*;
 import ru.gvg.model.User;
+import ru.gvg.service.FileService;
+import ru.gvg.service.UserService;
 import ru.gvg.service.UserValidator;
+
+import javax.servlet.http.HttpServletRequest;
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.List;
 
 
 /**
@@ -23,10 +28,15 @@ import ru.gvg.service.UserValidator;
 @Controller
 public class StartController {
 
-    private UserDAO userDAO;
+    @Value("${file.directory}")
+    private String fileDirectory;
+
+    private UserService userService;
+
+    private FileService fileService;
 
     private UserValidator userValidator;
-    private ObjectError error;
+//    private ObjectError error;
 
     @Autowired
     public void setUserValidator(UserValidator userValidator) {
@@ -34,73 +44,76 @@ public class StartController {
     }
 
     @Autowired
-    public void setUserDAO(UserDAO userDAO) {
-        this.userDAO = userDAO;
+    public void setUserService(UserService userService) {
+        this.userService = userService;
+    }
+
+    @Autowired
+    public void setFileService(FileService fileService) {
+        this.fileService = fileService;
     }
 
     @GetMapping("/login")
-    public String openLogin() {
+    public String openLogin(Model model) {
+        model.addAttribute("user", new User());
         return "login";
     }
 
     @GetMapping("/signup")
-    public String openSignup() {
+    public String openSignup(Model model) {
+        model.addAttribute("user", new User());
         return "signup";
     }
 
     @GetMapping("/users")
     public String setUsers(Model model) {
-        model.addAttribute("users", userDAO.getUsers());
+        List<User> users = userService.allUsers();
+        model.addAttribute("users", users);
         return "usersPage";
     }
 
     @PostMapping("/login")
     public String signIn(@RequestParam("email") String email,
                          @RequestParam("password") String password,
+                         HttpServletRequest request,
                          Model model) {
         String pageName = "login";
-        User user = userDAO.getUser(email);
+        User user = userService.findUserByEmail(email);
         if (user != null && user.getPassword().equals(password)) {
-            pageName = "redirect:/users";
+            model.addAttribute("id", user.getId());
+            pageName = "redirect:/files";
         } else {
-            if (user == null) {
-                model.addAttribute("message", "User not found!");
-            } else {
-                model.addAttribute("message", "Wrong password!");
-            }
+            model.addAttribute("user", new User());
+            model.addAttribute("message", user == null ? "User not found!" : "Wrong password!");
         }
         return pageName;
     }
 
     @PostMapping("/signup")
-    public String signUp(@ModelAttribute User newUser,
+    public String signUp(@ModelAttribute("user") User newUser,
                          Model model,
+                         HttpServletRequest request,
                          BindingResult result) {
         String pageName = "signup";
+        if (!newUser.getPassword().equals(newUser.getPasswordConfirm())) {
+            model.addAttribute("passwordError", "Passwords not equals!");
+            return pageName;
+        }
         userValidator.validate(newUser, result);
         if (!result.hasErrors()) {
-            if (userDAO.addUser(newUser)) {
-                pageName = "redirect:/users";
-//            } else {
-//                model.addAttribute("message", "Cant create user!");
+            if (userService.saveUser(newUser)) {
+                String rootDirectory = request.getSession().getServletContext().getRealPath("/");
+                Path path = Paths.get(rootDirectory + fileDirectory + File.separator + newUser.getId().toString());
+                fileService.createDirectory(path);
+                pageName = "redirect:/files";
             }
-        }else{
-            for(FieldError error : result.getFieldErrors()){
-                if(error.getField().equals("email")){
+        } else {
+            for (FieldError error : result.getFieldErrors()) {
+                if (error.getField().equals("email")) {
                     model.addAttribute("emailMessage", error.getDefaultMessage());
                 }
             }
         }
-//        User user = userDAO.getUser(newUser.getEmail());
-//        if (user == null) {
-//            if (userDAO.addUser(newUser)) {
-//                pageName = "redirect:/users";
-//            } else {
-//                model.addAttribute("message", "Cant create user!");
-//            }
-//        } else {
-//            model.addAttribute("message", "User found, please login!");
-//        }
         return pageName;
     }
 }

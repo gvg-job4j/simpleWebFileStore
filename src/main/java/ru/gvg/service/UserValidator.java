@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
-import ru.gvg.dao.UserDAO;
 import ru.gvg.model.User;
 
 /**
@@ -14,11 +13,11 @@ import ru.gvg.model.User;
 @Component
 public class UserValidator implements Validator {
 
-    private UserDAO userDAO;
+    private UserService userService;
 
     @Autowired
-    public void setUserDAO(UserDAO userDAO) {
-        this.userDAO = userDAO;
+    public void setUserDAO(UserService userService) {
+        this.userService = userService;
     }
 
     @Override
@@ -29,7 +28,7 @@ public class UserValidator implements Validator {
     @Override
     public void validate(Object o, Errors errors) {
         User user = (User) o;
-        if (userDAO.getUser(user.getEmail()) != null) {
+        if (userService.findUserByEmail((user.getEmail())) != null) {
             errors.rejectValue("email", "", "Already in use!");
         }
 
